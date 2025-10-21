@@ -103,3 +103,6 @@ VALUES ('James', 'Taylor', 'jtaylor@email.com', 'Fitness coach and nutrition exp
 
 INSERT INTO "Users" (first_name, last_name, email, bio, username, password, profile_image_url, created_on, active)
 VALUES ('Priya', 'Patel', 'priya.p@email.com', 'Marketing professional and pet parent', 'priyap', 'hashed_password_654', 'https://example.com/images/priya.jpg', '2024-04-18', 1);
+
+INSERT INTO "Posts" (user_id, category_id, title, publication_date, image_url, content, approved)
+VALUES (3, 1, 'Exploring the Mountains', '2024-05-01', 'https://example.com/images/mountains.jpg', 'A thrilling adventure through the rocky terrains.', 1);

@@ -2,7 +2,7 @@ import json
 from http.server import HTTPServer
 from nss_handler import HandleRequests, status
 
-from views import login_user, create_user
+from views import login_user, create_user, get_posts_by_user
 
 
 class JSONServer(HandleRequests):
@@ -14,17 +14,22 @@ class JSONServer(HandleRequests):
         response_body = ""
         url = self.parse_url(self.path)
 
-        # if url["requested_resource"] == "orders":
+        # if url["requested_resource"] == "posts":
         #     if url["pk"] != 0:
         #         response_body = get_single_order(url["pk"])
         #         return self.response(response_body, status.HTTP_200_SUCCESS.value)
         #     response_body = get_all_orders(url)
         #     return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
-        # else:
-        #     return self.response(
-        #         "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
-        #     )
+        if "user_id" in url["query_params"]:
+            user_id = url["query_params"]["user_id"][0]
+            response_body = get_posts_by_user(user_id)
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+        else:
+            return self.response(
+                "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+            )
 
     def do_POST(self):
         """Handle POST requests from a client"""
