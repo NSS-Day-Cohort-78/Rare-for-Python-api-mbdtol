@@ -96,7 +96,7 @@ class JSONServer(HandleRequests):
 #
 def main():
     host = ""
-    port = 8000
+    port = 8088
     HTTPServer((host, port), JSONServer).serve_forever()
 
 
