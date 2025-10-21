@@ -88,3 +88,18 @@ CREATE TABLE "Categories" (
 INSERT INTO Categories ('label') VALUES ('News');
 INSERT INTO Tags ('label') VALUES ('JavaScript');
 INSERT INTO Reactions ('label', 'image_url') VALUES ('happy', 'https://pngtree.com/so/happy');
+
+INSERT INTO "Users" (first_name, last_name, email, bio, username, password, profile_image_url, created_on, active)
+VALUES ('Sarah', 'Johnson', 'sarah.j@email.com', 'Coffee enthusiast and book lover', 'sarahj', 'hashed_password_123', 'https://example.com/images/sarah.jpg', '2024-01-15', 1);
+
+INSERT INTO "Users" (first_name, last_name, email, bio, username, password, profile_image_url, created_on, active)
+VALUES ('Michael', 'Chen', 'mchen@email.com', 'Software developer by day, gamer by night', 'mikec', 'hashed_password_456', 'https://example.com/images/mike.jpg', '2024-02-20', 1);
+
+INSERT INTO "Users" (first_name, last_name, email, bio, username, password, profile_image_url, created_on, active)
+VALUES ('Emma', 'Rodriguez', 'emma.r@email.com', 'Travel photographer exploring the world', 'emmar', 'hashed_password_789', 'https://example.com/images/emma.jpg', '2024-03-10', 1);
+
+INSERT INTO "Users" (first_name, last_name, email, bio, username, password, profile_image_url, created_on, active)
+VALUES ('James', 'Taylor', 'jtaylor@email.com', 'Fitness coach and nutrition expert', 'jamest', 'hashed_password_321', 'https://example.com/images/james.jpg', '2023-12-05', 0);
+
+INSERT INTO "Users" (first_name, last_name, email, bio, username, password, profile_image_url, created_on, active)
+VALUES ('Priya', 'Patel', 'priya.p@email.com', 'Marketing professional and pet parent', 'priyap', 'hashed_password_654', 'https://example.com/images/priya.jpg', '2024-04-18', 1);
