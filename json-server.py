@@ -45,6 +45,13 @@ class JSONServer(HandleRequests):
                 res,
                 status.HTTP_201_SUCCESS_CREATED.value,
             )
+        
+        if url["requested_resource"] == "register":
+            res = create_user(request_body)
+            return self.response(
+                res,
+                status.HTTP_201_SUCCESS_CREATED.value,
+            )
 
     def do_DELETE(self):
         """Handle DELETE requests for a single resource"""
