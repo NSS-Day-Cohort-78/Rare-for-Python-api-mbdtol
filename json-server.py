@@ -2,7 +2,7 @@ import json
 from http.server import HTTPServer
 from nss_handler import HandleRequests, status
 
-from views import login_user, create_user, get_posts_by_user
+from views import login_user, create_user, get_posts_by_user, get_all_posts
 
 
 class JSONServer(HandleRequests):
@@ -14,17 +14,20 @@ class JSONServer(HandleRequests):
         response_body = ""
         url = self.parse_url(self.path)
 
-        # if url["requested_resource"] == "posts":
-        #     if url["pk"] != 0:
-        #         response_body = get_single_order(url["pk"])
-        #         return self.response(response_body, status.HTTP_200_SUCCESS.value)
-        #     response_body = get_all_orders(url)
-        #     return self.response(response_body, status.HTTP_200_SUCCESS.value)
+        if url["requested_resource"] == "posts":
+            #     if url["pk"] != 0:
+            #         response_body = get_single_order(url["pk"])
+            #         return self.response(response_body, status.HTTP_200_SUCCESS.value)
+            #     response_body = get_all_orders(url)
+            #     return self.response(response_body, status.HTTP_200_SUCCESS.value)
+            if "user_id" in url["query_params"]:
+                user_id = url["query_params"]["user_id"][0]
+                response_body = get_posts_by_user(user_id)
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
-        if "user_id" in url["query_params"]:
-            user_id = url["query_params"]["user_id"][0]
-            response_body = get_posts_by_user(user_id)
-            return self.response(response_body, status.HTTP_200_SUCCESS.value)
+            else:
+                response_body = get_all_posts()
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
         else:
             return self.response(
@@ -45,7 +48,7 @@ class JSONServer(HandleRequests):
                 res,
                 status.HTTP_201_SUCCESS_CREATED.value,
             )
-        
+
         if url["requested_resource"] == "register":
             res = create_user(request_body)
             return self.response(
