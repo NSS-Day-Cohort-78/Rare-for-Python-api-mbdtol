@@ -2,11 +2,18 @@ import json
 from http.server import HTTPServer
 from nss_handler import HandleRequests, status
 
-from views import login_user, create_user, get_posts_by_user
+from views import (
+    login_user,
+    create_user,
+    get_posts_by_user,
+    get_post_by_id,
+    get_categories,
+    update_post,
+)
 
 
 class JSONServer(HandleRequests):
-    """Server class to handle incoming HTTP requests for shipping ships"""
+    """Server class to handle incoming HTTP requests for Rare Publishing"""
 
     def do_GET(self):
         """Handle GET requests from a client"""
@@ -21,9 +28,19 @@ class JSONServer(HandleRequests):
         #     response_body = get_all_orders(url)
         #     return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
-        if "user_id" in url["query_params"]:
-            user_id = url["query_params"]["user_id"][0]
-            response_body = get_posts_by_user(user_id)
+        if url["requested_resource"] == "posts":
+
+            if url["pk"] != 0:
+                response_body = get_post_by_id(url["pk"])
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+            if "user_id" in url["query_params"]:
+                user_id = url["query_params"]["user_id"][0]
+                response_body = get_posts_by_user(user_id)
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+        elif url["requested_resource"] == "categories":
+            response_body = get_categories()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
         else:
@@ -45,7 +62,7 @@ class JSONServer(HandleRequests):
                 res,
                 status.HTTP_201_SUCCESS_CREATED.value,
             )
-        
+
         if url["requested_resource"] == "register":
             res = create_user(request_body)
             return self.response(
@@ -73,11 +90,26 @@ class JSONServer(HandleRequests):
         """Handle PUT requests from a client"""
 
         url = self.parse_url(self.path)
-        pk = url["pk"]
 
         content_len = int(self.headers.get("content-length", 0))
         request_body = self.rfile.read(content_len)
         request_body = json.loads(request_body)
+
+        if url["requested_resource"] == "posts":
+            if url["pk"] != 0:
+                success = update_post(url["pk"], request_body)
+                if success:
+                    return self.response(
+                        "", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value
+                    )
+                else:
+                    return self.response(
+                        "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+                    )
+            else:
+                return self.response(
+                    "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+                )
 
         # if url["requested_resource"] == "metals":
         #     if pk != 0:
