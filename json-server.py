@@ -29,15 +29,15 @@ class JSONServer(HandleRequests):
             if "user_id" in url["query_params"]:
                 user_id = url["query_params"]["user_id"][0]
                 response_body = get_posts_by_user(user_id)
-                return self.response(response_body, status.HTTP_200_SUCCESS.value
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
             else:
                 response_body = get_all_posts()
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
-                                     
+
         elif url["requested_resource"] == "categories":
             response_body = get_categories()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
-          
+
         else:
             return self.response(
                 "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
