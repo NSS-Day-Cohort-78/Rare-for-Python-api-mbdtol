@@ -125,3 +125,27 @@ def update_post(post_id, post_data):
         rows_affected = db_cursor.rowcount
 
         return rows_affected > 0
+
+def delete_post(post_id):
+    """Deletes a post from the database
+
+    Args:
+        post_id (int): The id of the post to delete
+
+    Returns:
+        bool: True if update was successful
+    """
+    with sqlite3.connect("./db.sqlite3") as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute(
+            """
+            DELETE FROM Posts
+            WHERE id = ?
+            """,
+            (post_id,)
+        )
+
+        rows_affected = db_cursor.rowcount
+
+        return rows_affected > 0
