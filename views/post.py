@@ -126,6 +126,47 @@ def update_post(post_id, post_data):
 
         return rows_affected > 0
 
+
+def create_post(post_data):
+    """Creates a new post in the database"""
+        with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute(
+            """
+            INSERT INTO Posts
+                (user_id, category_id, title, publication_date, image_url, content, approved)
+            VALUES
+                (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                post_data["user_id"],
+                post_data["category_id"],
+                post_data["title"],
+                post_data["publication_date"],
+                post_data["image_url"],
+                post_data["content"],
+                post_data["approved"],
+            ),
+        )
+
+        post_id = db_cursor.lastrowid
+        post_data["id"] = post_id
+
+        for tag_id in post_data["tags"]:
+            db_cursor.execute(
+                """
+                INSERT INTO PostTags
+                    (post_id, tag_id)
+                VALUES
+                    (?, ?)
+                """,
+                (post_id, tag_id),
+            )
+
+    return json.dumps(post_data)
+    
 def delete_post(post_id):
     """Deletes a post from the database
 
