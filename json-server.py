@@ -10,6 +10,7 @@ from views import (
     get_categories,
     update_post,
     get_all_posts,
+    create_post,
 )
 
 
@@ -60,6 +61,13 @@ class JSONServer(HandleRequests):
 
         if url["requested_resource"] == "register":
             res = create_user(request_body)
+            return self.response(
+                res,
+                status.HTTP_201_SUCCESS_CREATED.value,
+            )
+
+        if url["requested_resource"] == "posts":
+            res = create_post(request_body)
             return self.response(
                 res,
                 status.HTTP_201_SUCCESS_CREATED.value,
