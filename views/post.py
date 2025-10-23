@@ -129,7 +129,7 @@ def update_post(post_id, post_data):
 
 def create_post(post_data):
     """Creates a new post in the database"""
-        with sqlite3.connect("./db.sqlite3") as conn:
+    with sqlite3.connect("./db.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
 
@@ -166,7 +166,7 @@ def create_post(post_data):
             )
 
     return json.dumps(post_data)
-    
+
 def delete_post(post_id):
     """Deletes a post from the database
 
