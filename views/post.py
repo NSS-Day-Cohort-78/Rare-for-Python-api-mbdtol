@@ -25,8 +25,11 @@ def get_post_by_id(post_id):
             p.publication_date,
             p.image_url,
             p.content,
-            p.approved
+            p.approved,
+            u.first_name,
+            u.last_name
         FROM Posts p
+        JOIN Users u ON p.user_id = u.id
         WHERE p.id = ?
         """,
             (post_id,),
@@ -43,6 +46,8 @@ def get_post_by_id(post_id):
             "image_url": row["image_url"],
             "content": row["content"],
             "approved": row["approved"],
+            "author_firstname": row["first_name"],
+            "author_lastname": row["last_name"]
         }
 
     return json.dumps(post)
