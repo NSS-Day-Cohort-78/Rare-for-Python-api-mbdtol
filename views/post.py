@@ -25,8 +25,11 @@ def get_post_by_id(post_id):
             p.publication_date,
             p.image_url,
             p.content,
-            p.approved
+            p.approved,
+            u.first_name,
+            u.last_name
         FROM Posts p
+        JOIN Users u ON p.user_id = u.id
         WHERE p.id = ?
         """,
             (post_id,),
@@ -43,6 +46,8 @@ def get_post_by_id(post_id):
             "image_url": row["image_url"],
             "content": row["content"],
             "approved": row["approved"],
+            "author_firstname": row["first_name"],
+            "author_lastname": row["last_name"]
         }
 
     return json.dumps(post)
@@ -124,7 +129,8 @@ def update_post(post_id, post_data):
 
 def create_post(post_data):
     """Creates a new post in the database"""
-    with sqlite3.connect("./db.sqlite3") as conn:
+        with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
 
         db_cursor.execute(
@@ -160,3 +166,27 @@ def create_post(post_data):
             )
 
     return json.dumps(post_data)
+    
+def delete_post(post_id):
+    """Deletes a post from the database
+
+    Args:
+        post_id (int): The id of the post to delete
+
+    Returns:
+        bool: True if update was successful
+    """
+    with sqlite3.connect("./db.sqlite3") as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute(
+            """
+            DELETE FROM Posts
+            WHERE id = ?
+            """,
+            (post_id,)
+        )
+
+        rows_affected = db_cursor.rowcount
+
+        return rows_affected > 0

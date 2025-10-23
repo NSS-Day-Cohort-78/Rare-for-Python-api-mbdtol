@@ -11,6 +11,7 @@ from views import (
     update_post,
     get_all_posts,
     create_post,
+    delete_post,
 )
 
 
@@ -27,10 +28,12 @@ class JSONServer(HandleRequests):
             if url["pk"] != 0:
                 response_body = get_post_by_id(url["pk"])
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
+            
             if "user_id" in url["query_params"]:
                 user_id = url["query_params"]["user_id"][0]
                 response_body = get_posts_by_user(user_id)
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
+            
             else:
                 response_body = get_all_posts()
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
@@ -77,6 +80,17 @@ class JSONServer(HandleRequests):
         """Handle DELETE requests for a single resource"""
         url = self.parse_url(self.path)
         pk = url["pk"]
+
+        if url["requested_resource"] == "posts":
+            if pk != 0:
+                successfully_deleted = delete_post(pk)
+                if successfully_deleted:
+                    return self.response(
+                        "", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value
+                    )
+                return self.response(
+                    "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+                )
 
         # if url["requested_resource"] == "orders":
         #     if pk != 0:
