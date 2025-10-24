@@ -93,8 +93,15 @@ def get_posts_by_user(user_id):
             p.publication_date,
             p.image_url,
             p.content,
-            p.approved
+            p.approved,
+            u.first_name,
+            u.last_name,
+            c.label
         FROM Posts p
+        JOIN Users u 
+            ON p.user_id = u.id
+        JOIN Categories c
+            ON p.category_id = c.id
         WHERE p.user_id = ?
         """,
             (user_id,),
@@ -108,7 +115,9 @@ def get_posts_by_user(user_id):
             post = {
                 "id": row["id"],
                 "user_id": row["user_id"],
+                "author": row["first_name"] + " " + row["last_name"],
                 "category_id": row["category_id"],
+                "category": row["label"],
                 "title": row["title"],
                 "publication_date": row["publication_date"],
                 "image_url": row["image_url"],
@@ -172,6 +181,7 @@ def get_all_posts():
 
     return json.dumps(posts)
 
+
 def get_user_by_id(user_id):
     """Get single user by their id
 
@@ -215,7 +225,7 @@ def get_user_by_id(user_id):
             "bio": row["bio"],
             "username": row["username"],
             "profile_image_url": row["profile_image_url"],
-            "post_count": row["post_count"]
+            "post_count": row["post_count"],
         }
 
     return json.dumps(user)
