@@ -12,6 +12,7 @@ from views import (
     get_all_posts,
     create_post,
     delete_post,
+    get_user_by_id,
 )
 
 
@@ -28,12 +29,12 @@ class JSONServer(HandleRequests):
             if url["pk"] != 0:
                 response_body = get_post_by_id(url["pk"])
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
-            
+
             if "user_id" in url["query_params"]:
                 user_id = url["query_params"]["user_id"][0]
                 response_body = get_posts_by_user(user_id)
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
-            
+
             else:
                 response_body = get_all_posts()
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
@@ -41,6 +42,16 @@ class JSONServer(HandleRequests):
         elif url["requested_resource"] == "categories":
             response_body = get_categories()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+        elif url["requested_resource"] == "users":
+            if url["pk"] != 0:
+                response_body = get_user_by_id(url["pk"])
+                if response_body is None:
+                    return self.response(
+                        "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+                    )
+
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
         else:
             return self.response(

@@ -171,3 +171,51 @@ def get_all_posts():
             posts.append(post)
 
     return json.dumps(posts)
+
+def get_user_by_id(user_id):
+    """Get single user by their id
+
+    Args:
+        user_id (int): The id of the user
+
+    Returns:
+        json string: The selected user
+    """
+    with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute(
+            """
+        SELECT
+            u.id,
+            u.first_name,
+            u.last_name,
+            u.email,
+            u.bio,
+            u.username,
+            u.profile_image_url,
+            (SELECT COUNT(*) FROM Posts WHERE user_id = u.id) as post_count
+        FROM Users u
+        WHERE u.id = ?
+        """,
+            (user_id,),
+        )
+
+        row = db_cursor.fetchone()
+
+        if row is None:
+            return None
+
+        user = {
+            "id": row["id"],
+            "first_name": row["first_name"],
+            "last_name": row["last_name"],
+            "email": row["email"],
+            "bio": row["bio"],
+            "username": row["username"],
+            "profile_image_url": row["profile_image_url"],
+            "post_count": row["post_count"]
+        }
+
+    return json.dumps(user)
