@@ -229,3 +229,56 @@ def get_user_by_id(user_id):
         }
 
     return json.dumps(user)
+
+def get_posts_by_search_term(search_term):
+    """get all posts matching search term in title"""
+    with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute(
+            """
+        SELECT
+            p.id,
+            p.user_id,
+            p.category_id,
+            p.title,
+            p.publication_date,
+            p.image_url,
+            p.content,
+            p.approved,
+            u.first_name,
+            u.last_name,
+            c.label
+        FROM Posts p
+        JOIN Users u 
+            ON p.user_id = u.id
+        JOIN Categories c
+            ON p.category_id = c.id
+        WHERE p.title LIKE ?
+        """,
+            (f"%{search_term}%",)
+        )
+
+        posts = []
+
+        dataset = db_cursor.fetchall()
+
+        for row in dataset:
+
+            post = {
+                "id": row["id"],
+                "user_id": row["user_id"],
+                "author": row["first_name"] + " " + row["last_name"],
+                "category_id": row["category_id"],
+                "category": row["label"],
+                "title": row["title"],
+                "publication_date": row["publication_date"],
+                "image_url": row["image_url"],
+                "content": row["content"],
+                "approved": row["approved"],
+            }
+
+            posts.append(post)
+
+    return json.dumps(posts)

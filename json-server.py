@@ -13,6 +13,7 @@ from views import (
     create_post,
     delete_post,
     get_user_by_id,
+    get_posts_by_search_term,
 )
 
 
@@ -35,9 +36,8 @@ class JSONServer(HandleRequests):
                 response_body = get_posts_by_user(user_id)
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
-            else:
-                response_body = get_all_posts()
-                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+            response_body = get_all_posts()
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
         elif url["requested_resource"] == "categories":
             response_body = get_categories()
@@ -53,6 +53,12 @@ class JSONServer(HandleRequests):
 
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
+        elif url["requested_resource"] == "search-titles":
+            if "search_term" in url["query_params"]:
+                search_term = url["query_params"]["search_term"][0][0]
+                response_body = get_posts_by_search_term(search_term)
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+            
         else:
             return self.response(
                 "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
