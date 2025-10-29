@@ -16,6 +16,9 @@ from views import (
     get_posts_by_search_term,
     get_all_tags,
     create_tag,
+    delete_tag,
+    update_tag,
+    get_tag_by_id,
 )
 
 
@@ -62,6 +65,14 @@ class JSONServer(HandleRequests):
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
         elif url["requested_resource"] == "tags":
+            if url["pk"] != 0:
+                response_body = get_tag_by_id(url["pk"])
+                if response_body is None:
+                    return self.response(
+                        "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+                    )
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
             response_body = get_all_tags()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
             
@@ -121,6 +132,17 @@ class JSONServer(HandleRequests):
                 return self.response(
                     "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
                 )
+        
+        elif url["requested_resource"] == "tags":
+            if pk != 0:
+                successfully_deleted = delete_tag(pk)
+                if successfully_deleted:
+                    return self.response(
+                        "", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value
+                    )
+                return self.response(
+                    "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+                )
 
         # if url["requested_resource"] == "orders":
         #     if pk != 0:
@@ -145,6 +167,22 @@ class JSONServer(HandleRequests):
         if url["requested_resource"] == "posts":
             if url["pk"] != 0:
                 success = update_post(url["pk"], request_body)
+                if success:
+                    return self.response(
+                        "", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value
+                    )
+                else:
+                    return self.response(
+                        "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+                    )
+            else:
+                return self.response(
+                    "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+                )
+        
+        elif url["requested_resource"] == "tags":
+            if url["pk"] != 0:
+                success = update_tag(url["pk"], request_body)
                 if success:
                     return self.response(
                         "", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value
