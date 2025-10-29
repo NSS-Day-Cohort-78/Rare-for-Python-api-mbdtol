@@ -14,6 +14,8 @@ from views import (
     delete_post,
     get_user_by_id,
     get_posts_by_search_term,
+    get_all_tags,
+    create_tag,
 )
 
 
@@ -58,6 +60,10 @@ class JSONServer(HandleRequests):
                 search_term = url["query_params"]["search_term"][0][0]
                 response_body = get_posts_by_search_term(search_term)
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+        elif url["requested_resource"] == "tags":
+            response_body = get_all_tags()
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
             
         else:
             return self.response(
@@ -88,6 +94,13 @@ class JSONServer(HandleRequests):
 
         if url["requested_resource"] == "posts":
             res = create_post(request_body)
+            return self.response(
+                res,
+                status.HTTP_201_SUCCESS_CREATED.value,
+            )
+
+        if url["requested_resource"] == "tags":
+            res = create_tag(request_body)
             return self.response(
                 res,
                 status.HTTP_201_SUCCESS_CREATED.value,
