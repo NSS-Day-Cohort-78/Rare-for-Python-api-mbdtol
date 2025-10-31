@@ -109,3 +109,6 @@ VALUES (3, 1, 'Exploring the Mountains', '2024-05-01', 'https://example.com/imag
 
 INSERT INTO "Posts" (user_id, category_id, title, publication_date, image_url, content, approved)
 VALUES (3, 1, 'Test', '2024-05-01', 'https://example.com/images/mountains.jpg', 'Test', 1);
+
+INSERT INTO "PostTags" (post_id, tag_id)
+VALUES (1, 3)
