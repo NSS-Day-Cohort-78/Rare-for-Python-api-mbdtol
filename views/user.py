@@ -255,7 +255,7 @@ def get_posts_by_search_term(search_term):
             ON p.user_id = u.id
         JOIN Categories c
             ON p.category_id = c.id
-        WHERE p.title LIKE ?
+        WHERE LOWER(p.title) LIKE LOWER(?)
         """,
             (f"%{search_term}%",)
         )

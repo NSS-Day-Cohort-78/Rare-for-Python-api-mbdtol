@@ -19,6 +19,7 @@ from views import (
     delete_tag,
     update_tag,
     get_tag_by_id,
+    update_post_tags,
 )
 
 
@@ -60,7 +61,7 @@ class JSONServer(HandleRequests):
 
         elif url["requested_resource"] == "search-titles":
             if "search_term" in url["query_params"]:
-                search_term = url["query_params"]["search_term"][0][0]
+                search_term = url["query_params"]["search_term"][0]
                 response_body = get_posts_by_search_term(search_term)
                 return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
@@ -164,7 +165,18 @@ class JSONServer(HandleRequests):
         request_body = self.rfile.read(content_len)
         request_body = json.loads(request_body)
 
-        if url["requested_resource"] == "posts":
+        if url["pk"] != 0 and self.path.endswith("/tags"):
+                success = update_post_tags(url["pk"], request_body)
+                if success:
+                    return self.response(
+                        "", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value
+                    )
+                else:
+                    return self.response(
+                        "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+                    )
+
+        elif url["requested_resource"] == "posts":
             if url["pk"] != 0:
                 success = update_post(url["pk"], request_body)
                 if success:
@@ -175,11 +187,12 @@ class JSONServer(HandleRequests):
                     return self.response(
                         "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
                     )
+
             else:
                 return self.response(
                     "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
                 )
-        
+
         elif url["requested_resource"] == "tags":
             if url["pk"] != 0:
                 success = update_tag(url["pk"], request_body)

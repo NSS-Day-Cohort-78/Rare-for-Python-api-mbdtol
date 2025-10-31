@@ -140,3 +140,38 @@ def get_tag_by_id(tag_id):
         }
 
     return json.dumps(tag)
+
+def update_post_tags(post_id, changes):
+    """Update tags for a specific post
+    
+    Args:
+        post_id (int): The ID of the post
+        changes (dict): Contains tags_to_add and tags_to_remove arrays
+        
+    Returns:
+        bool: True if successful
+    """
+
+    with sqlite3.connect("./db.sqlite3") as conn:
+        db_cursor = conn.cursor()
+
+        for tag_id in changes['tags_to_add']:
+            db_cursor.execute(
+                """
+                INSERT INTO PostTags (post_id, tag_id) 
+                VALUES (?, ?)
+                """,
+                (post_id, tag_id)
+            )
+
+        for tag_id in changes['tags_to_remove']:
+            db_cursor.execute(
+                """
+                DELETE FROM PostTags 
+                WHERE post_id = ? 
+                AND tag_id = ?
+                """,
+                (post_id, tag_id)
+            )
+
+        return True
